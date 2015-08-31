@@ -3,20 +3,7 @@ GPIO.setwarnings(False)
 #use physical pin numbering
 GPIO.setmode(GPIO.BOARD)
 
-#set up digital line detectors as inputs
-GPIO.setup(12, GPIO.IN)
-GPIO.setup(13, GPIO.IN)
-
 #use pwm on inputs so motors don't go too fast
-GPIO.setup(19, GPIO.OUT)
-p=GPIO.PWM(19, 20)
-p.start(0)
-GPIO.setup(21, GPIO.OUT)
-q=GPIO.PWM(21, 20)
-q.start(0)
-GPIO.setup(24, GPIO.OUT)
-a=GPIO.PWM(24,20)
-a.start(0)
 GPIO.setup(19, GPIO.OUT)
 p=GPIO.PWM(19, 20)
 p.start(0)
@@ -31,44 +18,25 @@ b=GPIO.PWM(26,20)
 b.start(0)
 
 # Setup LED pins as outputs
-LED1 = 07
-LED2 = 11
-LED3 = 12
-LED4 = 13
-GPIO.setup(LED1, GPIO.OUT)
-b=GPIO.PWM(26,20)
-b.start(0)
-
-# Setup LED pins as outputs
-LED1 = 07
-LED2 = 11
-LED3 = 12
-LED4 = 13
+LED1 = 13
+LED2 = 12
+LED3 = 11
+LED4 = 07
 GPIO.setup(LED1, GPIO.OUT)
 GPIO.setup(LED2, GPIO.OUT)
 GPIO.setup(LED3, GPIO.OUT)
 GPIO.setup(LED4, GPIO.OUT)
 
-def setLEDs(L1, L2, L3, L4):
-  GPIO.output(LED1, L1)
-  GPIO.output(LED2, L2)
-  GPIO.output(LED3, L3)
-  GPIO.output(LED4, L4)
-GPIO.setup(LED3, GPIO.OUT)
-GPIO.setup(LED4, GPIO.OUT)
-
-def setLEDs(L1, L2, L3, L4):
-  GPIO.output(LED1, L1)
-  GPIO.output(LED2, L2)
-  GPIO.output(LED3, L3)
-  GPIO.output(LED4, L4)
-
-setLEDs(1, 1, 1, 1)
-
 # Define Sonar Pin for Trigger and Echo to be the same
 sonar_L = 8
 sonarR_trigger =18
 sonarR_echo = 22
+
+def setLEDs(L1, L2, L3, L4):
+  GPIO.output(LED1, L1)
+  GPIO.output(LED2, L2)
+  GPIO.output(LED3, L3)
+  GPIO.output(LED4, L4)
 
 def leftSonar():
   GPIO.setup(sonar_L, GPIO.OUT)
@@ -90,12 +58,12 @@ def leftSonar():
   elapsed = stop-start
        	# Distance pulse travelled in that time is time
        	# multiplied by the speed of sound (cm/s)
-  distance = elapsed * 34000
+  distanceL = elapsed * 34000
        	# That was the distance there and back so halve the value
-  distance = distance / 2
-  print 'Distance_L:', distance
-  time.sleep(1)
-  return distance
+  distanceL = distanceL / 2
+##  print 'Distance_L:', distanceL
+##  time.sleep(.75)
+  return distanceL
   
 
 def rightSonar():
@@ -112,94 +80,52 @@ def rightSonar():
   while GPIO.input(sonarR_echo) == 1:
     stop = time.time()
   elapsed = stop-start
-  distance = elapsed * 34000
-  distance = distance / 2
-  print 'Distance_R:', distance
-  time.sleep(1)
-  return distance
-		
+  distanceR = elapsed * 34000
+  distanceR = distanceR / 2
+##  print 'Distance_R:', distanceR
+##  time.sleep(.75)
+  return distanceR
 
-try:
-  while True:
-    leftSonar() and rightSonar()
-except KeyboardInterrupt:
-  GPIO.cleanup()
-  sys.exit()
 
 # Pizazz Motor Test
-# Moves: Forward, Reverse, turn Right, turn Left, Stop - then repeat
-# Press Ctrl-C to stop
-#
-# Also demonstrates writing to the LEDs
-#
-# To check wiring is correct ensure the order of movement as above is correct
-# Run using: sudo python motorTest.py
-
-
-import RPi.GPIO as GPIO, sys, threading, time
-
-#use physical pin numbering
-GPIO.setmode(GPIO.BOARD)
-
-#use pwm on inputs so motors don't go too fast
-# Pins 19, 21 Right Motor
-# Pins 24, 26 Left Motor
-GPIO.setup(19, GPIO.OUT)
-p=GPIO.PWM(19, 20)
-p.start(0)
-GPIO.setup(21, GPIO.OUT)
-q=GPIO.PWM(21, 20)
-q.start(0)
-GPIO.setup(24, GPIO.OUT)
-a=GPIO.PWM(24,20)
-a.start(0)
-GPIO.setup(26, GPIO.OUT)
-b=GPIO.PWM(26,20)
-b.start(0)
 
 slowspeed = 25
+bspeed = 20
 fastspeed = 100
 turnspeed = 15
-LED1 = 22
-LED2 = 18
-LED3 = 11
-LED4 = 07
-GPIO.setup(LED1, GPIO.OUT)
-GPIO.setup(LED2, GPIO.OUT)
-GPIO.setup(LED3, GPIO.OUT)
-GPIO.setup(LED4, GPIO.OUT)
 
-def forwards():
-  p.ChangeDutyCycle(fastspeed)
+def forwards(speed):
+  p.ChangeDutyCycle(speed)
   q.ChangeDutyCycle(0)
-  a.ChangeDutyCycle(fastspeed)
+  a.ChangeDutyCycle(speed)
   b.ChangeDutyCycle(0)
-  setLEDs(1, 0, 0, 1)
-  print('straight')
-
-def reverse():
+  setLEDs(0, 0, 0, 0)
+  #print('straight')
+  #LEDs are reverse logic
+  
+def reverse(speed):
   p.ChangeDutyCycle(0)
-  q.ChangeDutyCycle(fastspeed)
+  q.ChangeDutyCycle(speed)
   a.ChangeDutyCycle(0)
-  b.ChangeDutyCycle(fastspeed)
-  setLEDs(0, 1, 1, 0)
-  print('straight')
+  b.ChangeDutyCycle(speed)
+  setLEDs(0, 1, 0, 1)
+  #print('straight')
 
 def turnleft():
-  p.ChangeDutyCycle(fastspeed)
+  p.ChangeDutyCycle(turnspeed)
   q.ChangeDutyCycle(0)
-  a.ChangeDutyCycle(slowspeed)
-  b.ChangeDutyCycle(0)
+  a.ChangeDutyCycle(0)
+  b.ChangeDutyCycle(turnspeed)
   setLEDs(0, 0, 1, 1)
-  print('left')
+  #print('left')
 
 def turnright():
-  p.ChangeDutyCycle(slowspeed)
-  q.ChangeDutyCycle(0)
-  a.ChangeDutyCycle(fastspeed)
+  p.ChangeDutyCycle(0)
+  q.ChangeDutyCycle(turnspeed)
+  a.ChangeDutyCycle(turnspeed)
   b.ChangeDutyCycle(0)
   setLEDs(1, 1, 0, 0)
-  print('right')
+  #print('right')
 
 def sharpright():
   p.ChangeDutyCycle(0)
@@ -215,39 +141,40 @@ def stopall():
   a.ChangeDutyCycle(0)
   b.ChangeDutyCycle(0)
   setLEDs(1, 1, 1, 1)
-  print('stop')
+  #print('stop')
 
-def setLEDs(L1, L2, L3, L4):
-  GPIO.output(LED1, L1)
-  GPIO.output(LED2, L2)
-  GPIO.output(LED3, L3)
-  GPIO.output(LED4, L4)
-
-setLEDs(1, 1, 1, 1) # switch all LEDs off
 
 # main loop
-#try:
-    #while True:
-     # forwards()
-     # time.sleep(1)
-     # sharpright()
-     # time.sleep(1)
-     # forwards()
-     # time.sleep(1)
-     # sharpright()
-     # time.sleep(1)
-     # forwards()
-     # time.sleep(1)
-     # sharpright()
-     # time.sleep(1)
-     # forwards()
-     # time.sleep(1)
-     # sharpright()
-     # time.sleep(1)
-     # stopall()
-     # GPIO.cleanup()
-
-#except KeyboardInterrupt:
-       #Going = False
-       #GPIO.cleanup()
-       #sys.exit()
+try:
+    while True:
+      distanceR = rightSonar()
+      time.sleep(0.1)
+      distanceL = leftSonar()
+      if min((int(distanceL)/2), 100) == (int(distanceL)/2):
+        speed = max(20, (int(distanceL)/2))
+      else:
+        speed = 100
+        
+      if distanceL > 20 and distanceL < 30 and distanceR > 20 and distanceR < 30:
+        stopall()
+        time.sleep(.3)
+      elif distanceL < 20 and distanceR < 20:
+        reverse(speed)
+        time.sleep(.3)
+      elif distanceL > 30 and distanceL < 200 and distanceR > 30 and distanceR < 200:
+        forwards(speed)
+        time.sleep(.3)
+      elif distanceL >200 and distanceR > 200:
+        stopall()
+        time.sleep(0.3)
+      elif distanceL < 40 and distanceR > 60:
+        turnleft()
+        time.sleep(0.5)
+      elif distanceR < 40 and distanceL > 60:
+        turnright()
+        time.sleep(0.5)
+        
+except KeyboardInterrupt:
+  setLEDs(1, 1, 1, 1)
+  GPIO.cleanup()
+  sys.exit()
