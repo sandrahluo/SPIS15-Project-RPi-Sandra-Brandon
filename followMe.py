@@ -86,9 +86,6 @@ def rightSonar():
 ##  time.sleep(.75)
   return distanceR
 
-
-# Pizazz Motor Test
-
 slowspeed = 25
 bspeed = 20
 fastspeed = 100
@@ -109,6 +106,8 @@ def reverse(speed):
   a.ChangeDutyCycle(0)
   b.ChangeDutyCycle(speed)
   setLEDs(0, 1, 0, 1)
+  time.sleep(0.3)
+  setLEDs(1, 0, 1, 0)
   #print('straight')
 
 def turnleft():
@@ -127,14 +126,6 @@ def turnright():
   setLEDs(1, 1, 0, 0)
   #print('right')
 
-def sharpright():
-  p.ChangeDutyCycle(0)
-  q.ChangeDutyCycle(slowspeed)
-  a.ChangeDutyCycle(turnspeed)
-  b.ChangeDutyCycle(0)
-  setLEDs(1,1,0,0)
-  print('sharp right')
-
 def stopall():
   p.ChangeDutyCycle(0)
   q.ChangeDutyCycle(0)
@@ -142,6 +133,26 @@ def stopall():
   b.ChangeDutyCycle(0)
   setLEDs(1, 1, 1, 1)
   #print('stop')
+
+def follow(distanceL, distanceR, speed):
+    if distanceL > 20 and distanceL < 30 and distanceR > 20 and distanceR < 30:
+        stopall()
+        time.sleep(.3)
+    elif distanceL < 20 and distanceR < 20:
+        reverse(speed)
+        time.sleep(.3)
+    elif distanceL > 30 and distanceL < 200 and distanceR > 30 and distanceR < 200:
+        forwards(speed)
+        time.sleep(.3)
+    elif distanceL >200 and distanceR > 200:
+        stopall()
+        time.sleep(0.3)
+    elif distanceL < 40 and distanceR > 60:
+        turnleft()
+        time.sleep(0.5)
+    elif distanceR < 40 and distanceL > 60:
+        turnright()
+        time.sleep(0.5)
 
 
 # main loop
@@ -155,24 +166,7 @@ try:
       else:
         speed = 100
         
-      if distanceL > 20 and distanceL < 30 and distanceR > 20 and distanceR < 30:
-        stopall()
-        time.sleep(.3)
-      elif distanceL < 20 and distanceR < 20:
-        reverse(speed)
-        time.sleep(.3)
-      elif distanceL > 30 and distanceL < 200 and distanceR > 30 and distanceR < 200:
-        forwards(speed)
-        time.sleep(.3)
-      elif distanceL >200 and distanceR > 200:
-        stopall()
-        time.sleep(0.3)
-      elif distanceL < 40 and distanceR > 60:
-        turnleft()
-        time.sleep(0.5)
-      elif distanceR < 40 and distanceL > 60:
-        turnright()
-        time.sleep(0.5)
+      follow(distanceL, distanceR, speed)
         
 except KeyboardInterrupt:
   setLEDs(1, 1, 1, 1)
