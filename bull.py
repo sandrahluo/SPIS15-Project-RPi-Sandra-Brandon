@@ -87,9 +87,9 @@ def rightSonar():
   return distanceR
 
 speed = 25
-slowspeed = 25
 fastspeed = 100
 turnspeed = 15
+spinspeed = 15
 
 def forwards(speed):
   p.ChangeDutyCycle(speed)
@@ -97,7 +97,6 @@ def forwards(speed):
   a.ChangeDutyCycle(speed)
   b.ChangeDutyCycle(0)
   setLEDs(0, 0, 0, 0)
-  #print('straight')
   #LEDs are reverse logic
   
 def reverse(speed):
@@ -108,7 +107,6 @@ def reverse(speed):
   setLEDs(0, 1, 0, 1)
   time.sleep(0.3)
   setLEDs(1, 0, 1, 0)
-  #print('straight')
 
 def turnleft():
   p.ChangeDutyCycle(turnspeed)
@@ -116,7 +114,6 @@ def turnleft():
   a.ChangeDutyCycle(0)
   b.ChangeDutyCycle(turnspeed)
   setLEDs(0, 0, 1, 1)
-  #print('left')
 
 def turnright():
   p.ChangeDutyCycle(0)
@@ -124,7 +121,6 @@ def turnright():
   a.ChangeDutyCycle(turnspeed)
   b.ChangeDutyCycle(0)
   setLEDs(1, 1, 0, 0)
-  #print('right')
 
 def stopall():
   p.ChangeDutyCycle(0)
@@ -132,7 +128,6 @@ def stopall():
   a.ChangeDutyCycle(0)
   b.ChangeDutyCycle(0)
   setLEDs(1, 1, 1, 1)
-  #print('stop')
 
 
 def bullFollow(distanceL, distanceR):
@@ -140,19 +135,19 @@ def bullFollow(distanceL, distanceR):
     speed = max(20, (int(distanceL)/2))
   else:
     speed = 50
-  if distanceL > 5 and distanceL < 10 and distanceR > 5 and distanceR < 10:
+  if distanceL >10 and distanceL < 20 and distanceR > 10 and distanceR < 20:
     stopall()
     time.sleep(.3)
-  elif distanceL < 5 and distanceR < 5:
+  elif distanceL < 10 and distanceR < 10:
     reverse(speed)
     time.sleep(.3)
-  elif distanceL > 10 and distanceL < 20 and distanceR > 10 and distanceR < 20:
+  elif distanceL > 20 and distanceL < 30 and distanceR > 20 and distanceR < 30:
     forwards(speed)
     time.sleep(.3)
-  elif distanceL < 20 and distanceR > 50:
+  elif distanceL <30 and distanceR > 50:
     turnleft()
     time.sleep(0.5)
-  elif distanceR < 20 and distanceL > 50:
+  elif distanceR < 30 and distanceL > 50:
     turnright()
     time.sleep(0.5)
     
@@ -167,11 +162,22 @@ def sprint():
 
 def spin180():
   p.ChangeDutyCycle(0)
-  q.ChangeDutyCycle(turnspeed)
-  a.ChangeDutyCycle(turnspeed)
+  q.ChangeDutyCycle(spinspeed)
+  a.ChangeDutyCycle(spinspeed)
   b.ChangeDutyCycle(0)
-  setLEDs(1, 1, 0, 0)
-
+  setLEDs(0, 1, 1, 1)
+  time.sleep(0.2)
+  setLEDs(1, 0, 1, 1)
+  time.sleep(0.2)
+  setLEDs(1, 1, 0, 1)
+  time.sleep(0.2)
+  setLEDs(1, 1, 1, 0)
+  time.sleep(0.2)
+  setLEDs(0, 1, 1, 1)
+#  time.sleep(0.2)
+#  setLEDs(1, 0, 1, 1)
+ # time.sleep(0.2)
+ # setLEDs(1, 1, 0, 1)
 following = 0
 sprinting = 1
 stopping = 2
@@ -183,32 +189,19 @@ try:
       distanceR = rightSonar()
       time.sleep(0.05)
       distanceL = leftSonar()
-      print 'distanceR:', distanceR
-      print 'distanceL:', distanceL
 
-      if distanceL > 30 and distanceR >30 and mode != stopping:
+      if distanceL > 40 and distanceR >40 and mode != stopping:
         mode = sprinting
         sprint()
       elif mode == sprinting:
         stopall()
-        #spin180()
-        #time.sleep(2.5)
+        spin180()
+        time.sleep(.8)
+        stopall()
         mode = stopping
-      elif distanceL < 30 or distanceR < 30:
+      elif distanceL < 40 or distanceR < 40:
         mode = following
-        bullFollow(distanceL, distanceR)
-
-      
-        
-        
-##      while distanceL > 30 and distanceR > 30:
-##        mode = sprinting
-##        sprintMode(distanceL, distanceR, mode)
-##        
-##      while distanceL <20 and distanceR < 20:
-##        mode = following
-##        followMode(distanceL, distanceR, mode)
-        
+        bullFollow(distanceL, distanceR)        
         
 except KeyboardInterrupt:
   setLEDs(1, 1, 1, 1)
