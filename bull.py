@@ -173,7 +173,7 @@ def spin180():
   time.sleep(0.2)
   setLEDs(1, 1, 1, 0)
   time.sleep(0.2)
-  setLEDs(0, 1, 1, 1)
+  setLEDs(1, 1, 1, 1)
 #  time.sleep(0.2)
 #  setLEDs(1, 0, 1, 1)
  # time.sleep(0.2)
@@ -185,23 +185,26 @@ stopping = 2
 # main loop
 try:
     mode = following
+        #starts out in following mode
     while True:
       distanceR = rightSonar()
       time.sleep(0.05)
       distanceL = leftSonar()
-
+        #continuously measuring distance w/sonar
       if distanceL > 40 and distanceR >40 and mode != stopping:
         mode = sprinting
         sprint()
       elif mode == sprinting:
         stopall()
         spin180()
-        time.sleep(.8)
+        time.sleep(.6)
         stopall()
         mode = stopping
+        #when mode is sprinting but both distanceL and distanceR are greater than 40
+	#will stop and go into stopping mode until reactivated when it detects distances < 40
       elif distanceL < 40 or distanceR < 40:
         mode = following
-        bullFollow(distanceL, distanceR)        
+        bullFollow(distanceL, distanceR)       
         
 except KeyboardInterrupt:
   setLEDs(1, 1, 1, 1)
