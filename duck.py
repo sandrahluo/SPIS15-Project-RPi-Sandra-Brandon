@@ -86,7 +86,7 @@ def rightSonar():
 ##  time.sleep(.75)
   return distanceR
 
-speed = 40
+speed = 30
 fastspeed = 100
 turnspeed = 15
 spinspeed = 15
