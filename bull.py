@@ -61,8 +61,6 @@ def leftSonar():
   distanceL = elapsed * 34000
        	# That was the distance there and back so halve the value
   distanceL = distanceL / 2
-##  print 'Distance_L:', distanceL
-##  time.sleep(.75)
   return distanceL
   
 
@@ -82,8 +80,6 @@ def rightSonar():
   elapsed = stop-start
   distanceR = elapsed * 34000
   distanceR = distanceR / 2
-##  print 'Distance_R:', distanceR
-##  time.sleep(.75)
   return distanceR
 
 speed = 25
@@ -174,10 +170,7 @@ def spin180():
   setLEDs(1, 1, 1, 0)
   time.sleep(0.2)
   setLEDs(1, 1, 1, 1)
-#  time.sleep(0.2)
-#  setLEDs(1, 0, 1, 1)
- # time.sleep(0.2)
- # setLEDs(1, 1, 0, 1)
+
 following = 0
 sprinting = 1
 stopping = 2
